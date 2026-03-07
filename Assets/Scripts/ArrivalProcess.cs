@@ -109,9 +109,15 @@ public class ArrivalProcess : MonoBehaviour
             //float timeToNextArrivalInSec = Random.Range(minInterArrivalTimeInSeconds,maxInterArrivalTimeInSeconds);
             yield return new WaitForSeconds(timeToNextArrivalInSec);
 
-            //yield return new WaitForSeconds(interArrivalTimeInSeconds);
+    public void StopGeneratingArrivals()
+    {
+        generateArrivals = false;
+    }
 
-        }
+    public void ChangeArrivalStrategy(ArrivalIntervalTimeStrategy newStrategy)
+    {
+        arrivalIntervalTimeStrategy = newStrategy;
+    }
 
     }
 }
