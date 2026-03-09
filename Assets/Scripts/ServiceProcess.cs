@@ -52,37 +52,29 @@ public class ServiceProcess : MonoBehaviour
         interServiceTimeInHours = 1.0f / serviceRateAsCarsPerHour;
         interServiceTimeInMinutes = interServiceTimeInHours * 60;
         interServiceTimeInSeconds = interServiceTimeInMinutes * 60;
-        //queueManager = this.GetComponent<QueueManager>();
-        //queueManager = new QueueManager();
-        //StartCoroutine(GenerateServices());
-    }
-    private void OnTriggerEnter(Collider other)
-    {
-#if DEBUG_SP
-        print("ServiceProcess.OnTriggerEnter:otherID=" + other.gameObject.GetInstanceID());
-#endif
-
-        if (other.gameObject.tag == "Car")
-        {
-            carInService = other.gameObject;
-            carInService.GetComponent<CarController>().SetInService(true);
-
-            //if (queueManager.Count() == 0)
-            //{
-            //    queueManager.Add(carInService);
-            //}
-            
-            generateServices = true;
-            //carController = carInService.GetComponent<CarController>();
-            StartCoroutine(GenerateServices());
-        }
+        generateServices = true;  // Start service immediately
+        StartCoroutine(GenerateServices());
     }
 
     IEnumerator GenerateServices()
     {
         while (generateServices)
         {
-            //Instantiate(carPrefab, carSpawnPlace.position, Quaternion.identity);
+            // Wait until there's a car in the queue
+            while (queueManager.Count() == 0)
+            {
+                yield return new WaitForSeconds(0.1f);
+            }
+
+            // Get the first car from queue to service
+            carInService = queueManager.First();
+            if (carInService == null)
+            {
+                yield return new WaitForSeconds(0.1f);
+                continue;
+            }
+
+            // Calculate service time
             float timeToNextServiceInSec = interServiceTimeInSeconds;
             float U = Random.value;
             switch (serviceIntervalTimeStrategy)
@@ -106,31 +98,18 @@ public class ServiceProcess : MonoBehaviour
                 default:
                     print("No acceptable ServiceIntervalTimeStrategy:" + serviceIntervalTimeStrategy);
                     break;
-
             }
 
-            //New as of Feb.23rd
-            //float timeToNextServiceInSec = Random.Range(minInterServiceTimeInSeconds,maxInterServiceTimeInSeconds);
-            generateServices = false;
+
+            // Wait for service to complete
             yield return new WaitForSeconds(timeToNextServiceInSec);
 
-            //yield return new WaitForSeconds(interServiceTimeInSeconds);
-
+            // Service complete - tell car to exit
+            carInService.GetComponent<CarController>().ExitService(carExitPlace);
+            carInService = null;
+            
+            // Loop continues to service next car
         }
-        carInService.GetComponent<CarController>().ExitService(carExitPlace);
-
-    }
-    private void OnDrawGizmos()
-    {
-        //BoxCollidercarInService.GetComponent<BoxCollider>
-        if (carInService)
-        {
-            Renderer r = carInService.GetComponentInChildren<Renderer>(false);
-            r.material.color = Color.green;
-
-        }
-
-
     }
 
     public void ChangeServiceStrategy(ServiceIntervalTimeStrategy strategy)
