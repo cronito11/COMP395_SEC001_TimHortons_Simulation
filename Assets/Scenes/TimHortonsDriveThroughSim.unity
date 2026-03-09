@@ -2453,7 +2453,7 @@ MonoBehaviour:
   - 0.8462
   - 0.8846
   - 1
-  arrivalIntervalTimeStrategy: 2
+  arrivalIntervalTimeStrategy: 3
 --- !u!114 &963194230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3749,6 +3749,9 @@ MonoBehaviour:
   generateServices: 1
   minInterServiceTimeInSeconds: 39
   maxInterServiceTimeInSeconds: 359
+  a: 3
+  b: 7
+  c: 5
   xs:
   - 10
   - 11
@@ -3761,7 +3764,7 @@ MonoBehaviour:
   - 0.9231
   - 0.9615
   - 1
-  serviceIntervalTimeStrategy: 2
+  serviceIntervalTimeStrategy: 3
 --- !u!114 &1741770769
 MonoBehaviour:
   m_ObjectHideFlags: 0

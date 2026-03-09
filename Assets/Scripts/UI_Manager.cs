@@ -21,14 +21,12 @@ public class UI_Manager : MonoBehaviour
         dropdownArrival.ClearOptions();
         dropdownArrival.AddOptions(Enum.GetNames(typeof(ArrivalIntervalTimeStrategy)).ToList());
         dropdownArrival.onValueChanged.AddListener(OnValueChanged);
+        dropdownArrival.SetValueWithoutNotify((int) ArrivalIntervalTimeStrategy.ObservedIntervalTime);
         //Service time
         dropdownService.ClearOptions();
         dropdownService.AddOptions(Enum.GetNames(typeof(ServiceProcess.ServiceIntervalTimeStrategy)).ToList());
         dropdownService.onValueChanged.AddListener(OnServiceValueChanged);
-
-        //Initialize
-        OnValueChanged((int) ArrivalIntervalTimeStrategy.ObservedIntervalTime);
-        OnServiceValueChanged((int)ServiceProcess.ServiceIntervalTimeStrategy.ObservedIntervalTime);
+        dropdownService.SetValueWithoutNotify((int)ServiceProcess.ServiceIntervalTimeStrategy.ObservedIntervalTime);
     }
 
     private void OnDestroy()

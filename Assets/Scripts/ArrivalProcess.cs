@@ -30,11 +30,11 @@ public class ArrivalProcess : MonoBehaviour
     //Ref: https://en.wikipedia.org/wiki/Triangular_distribution
     public float a=3, b=7, c=5; // You should have c in (a,b)   a<c<b
     //
-    [Header("Observed Distribution")]
-    [Tooltip("These are Cumulative Distribution data ys")]
-    public float[] xs = { 8, 6, 6, 2, 1, 3 };
-    [Tooltip("These are Cumulative Distribution data xs")]
-    public float[] ys = { .3077f, .5385f, .7692f, .8462f, .8846f, 1 };
+    [Header("Observed Distribution - Inter-Arrival Times ")]
+    
+    public float[] xs = { 0, 50, 100, 150, 200, 250, 300 }; 
+    public float[] ys = { 0f, .3077f, .5385f, .7692f, .8462f, .8846f, 1f }; 
+    
    public enum ArrivalIntervalTimeStrategy
     {
         ConstantIntervalTime,

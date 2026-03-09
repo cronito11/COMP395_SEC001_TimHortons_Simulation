@@ -19,24 +19,28 @@ public class ServiceProcess : MonoBehaviour
     //New as of Feb.23rd
     //Simple generation distribution - Uniform(min,max)
     //
+    [Header("Uniform Distribution")]
     public float minInterServiceTimeInSeconds = 3;
     public float maxInterServiceTimeInSeconds = 60;
-    //
+    
+    [Header("Triangular Distribution")]
+    public float a = 3, b = 7, c = 5; 
 
     //New as Feb.25th
     //CarController carController;
     QueueManager queueManager; //=new QueueManager();
-    [Tooltip("These are Cumulative Distribution data ys")]
-    public float[] xs = { 10, 11, 3, 1, 1 };
-    [Tooltip("These are Cumulative Distribution data xs")]
-    public float[] ys = { .3846f, .8077f, .9231f, .9615f, 1 };
+    
+    [Header("Observed Distribution - Service Times")]
+    public float[] xs = { 0, 80, 160, 240, 320, 400 };  
+    public float[] ys = { 0f, .3846f, .8077f, .9231f, .9615f, 1f }; 
 
     public enum ServiceIntervalTimeStrategy
     {
         ConstantIntervalTime,
         UniformIntervalTime,
         ExponentialIntervalTime,
-        ObservedIntervalTime
+        ObservedIntervalTime,
+        TriangularDistribution
     }
 
     public ServiceIntervalTimeStrategy serviceIntervalTimeStrategy = ServiceIntervalTimeStrategy.UniformIntervalTime;
@@ -44,6 +48,7 @@ public class ServiceProcess : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        queueManager = FindFirstObjectByType<QueueManager>();
         interServiceTimeInHours = 1.0f / serviceRateAsCarsPerHour;
         interServiceTimeInMinutes = interServiceTimeInHours * 60;
         interServiceTimeInSeconds = interServiceTimeInMinutes * 60;
@@ -89,12 +94,14 @@ public class ServiceProcess : MonoBehaviour
                     timeToNextServiceInSec = Random.Range(minInterServiceTimeInSeconds, maxInterServiceTimeInSeconds);
                     break;
                 case ServiceIntervalTimeStrategy.ExponentialIntervalTime:
-                    float Lambda = 1 / serviceRateAsCarsPerHour;
+                    float Lambda = 1/ serviceRateAsCarsPerHour;
                     timeToNextServiceInSec = Utilities.GetExp(U, Lambda);
                     break;
                 case ServiceIntervalTimeStrategy.ObservedIntervalTime:
-                    timeToNextServiceInSec = interServiceTimeInSeconds;
                     timeToNextServiceInSec = Utilities.MultiInterpolate(ys, xs, U) * 60; //we get it in min, so *60 => in sec
+                    break;
+                case ServiceIntervalTimeStrategy.TriangularDistribution:
+                    timeToNextServiceInSec = Utilities.GetTriangularDistribution(U, a, b, c);
                     break;
                 default:
                     print("No acceptable ServiceIntervalTimeStrategy:" + serviceIntervalTimeStrategy);
