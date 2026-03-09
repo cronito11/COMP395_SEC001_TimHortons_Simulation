@@ -103,6 +103,30 @@ internal class Utilities
         new_y = y_i + step * K; //RK4 Scheme
 
     }
+    public static float MultiInverseInterpolate(float[] x, float[] cum_freqs, float u)
+    {
+        float xval = 0;
+        if(u<= cum_freqs[0])
+            return x[0];
+
+        for (int i = 0; i < cum_freqs.Length - 1; i++)
+        {
+            //guard for flat segment of distribution
+            if (Mathf.Abs(cum_freqs[i + 1] - cum_freqs[i]) < float.Epsilon)
+                return x[i];
+            //we have the segment; interpolate
+            if (cum_freqs[i] <= u && u <= cum_freqs[i + 1])
+            {
+                xval = x[i] + (u - cum_freqs[i]) * (x[i + 1] - x[i]) / (cum_freqs[i + 1] - cum_freqs[i]);
+                break;
+            }
+        }
+        if(xval ==0 && u> cum_freqs[cum_freqs.Length -1])
+            xval = x[cum_freqs.Length - 1];
+
+        return xval;
+    }
+
     //MultiInterpolation
     public static float MultiInterpolate(float[] xs, float[] ys, float x)
     {

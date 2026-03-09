@@ -94,7 +94,7 @@ public class ArrivalProcess : MonoBehaviour
                     timeToNextArrivalInSec = Utilities.GetExp(U, Lambda);
                     break;
                 case ArrivalIntervalTimeStrategy.ObservedIntervalTime:
-                    timeToNextArrivalInSec = Utilities.MultiInterpolate(ys, xs, U) * 60; //we get it in min, so *60 => in sec
+                    timeToNextArrivalInSec = Utilities.MultiInverseInterpolate(xs, ys, U) ;
                     break;
                 case ArrivalIntervalTimeStrategy.TriangularDistribution:
                     timeToNextArrivalInSec = Utilities.GetTriangularDistribution(U, a, b, c);

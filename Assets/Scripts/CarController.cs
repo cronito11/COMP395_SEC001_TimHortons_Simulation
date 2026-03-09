@@ -39,7 +39,7 @@ public class CarController : MonoBehaviour
 
         //
         carState = CarState.Entered;
-        prefabs[Random.RandomRange(0, prefabs.Length)].SetActive(true);
+        prefabs[Random.Range(0, prefabs.Length)].SetActive(true);
         animator =  GetComponentInChildren<Animator>(false);
         FSMCar();
 
