@@ -98,7 +98,7 @@ public class ServiceProcess : MonoBehaviour
                     timeToNextServiceInSec = Utilities.GetExp(U, Lambda);
                     break;
                 case ServiceIntervalTimeStrategy.ObservedIntervalTime:
-                    timeToNextServiceInSec = Utilities.MultiInterpolate(ys, xs, U) * 60; //we get it in min, so *60 => in sec
+                    timeToNextServiceInSec = Utilities.MultiInverseInterpolate(xs, ys, U);
                     break;
                 case ServiceIntervalTimeStrategy.TriangularDistribution:
                     timeToNextServiceInSec = Utilities.GetTriangularDistribution(U, a, b, c);
