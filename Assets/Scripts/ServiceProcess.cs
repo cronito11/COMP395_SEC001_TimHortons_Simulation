@@ -68,10 +68,15 @@ public class ServiceProcess : MonoBehaviour
 
             // Get the first car from queue to service
             carInService = queueManager.First();
-            if (carInService == null)
+            if (carInService == null )
             {
                 yield return new WaitForSeconds(0.1f);
                 continue;
+            }
+            CarController carController = carInService.GetComponent<CarController>();
+            while (carController.carState == CarController.CarState.Entered)
+            {
+                yield return new WaitForSeconds(0.1f);
             }
 
             // Calculate service time
@@ -100,12 +105,13 @@ public class ServiceProcess : MonoBehaviour
                     break;
             }
 
+            Debug.Log($"Servicing car {carInService.GetInstanceID()} for {timeToNextServiceInSec:F2}s");
 
             // Wait for service to complete
             yield return new WaitForSeconds(timeToNextServiceInSec);
 
             // Service complete - tell car to exit
-            carInService.GetComponent<CarController>().ExitService(carExitPlace);
+            carController.ExitService(carExitPlace);
             carInService = null;
             
             // Loop continues to service next car

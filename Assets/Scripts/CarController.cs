@@ -165,7 +165,7 @@ public class CarController : MonoBehaviour
         else if (other.gameObject.tag == "DriveThruWindow")
         {
             if(this.carState  !=  CarState.Serviced)
-                ChangeState(CarState.InService);
+            ChangeState(CarState.InService);
             //SetInService(true);
         }
         else if (other.gameObject.tag == "CarExit")
