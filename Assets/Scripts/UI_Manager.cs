@@ -7,30 +7,45 @@ using static ArrivalProcess;
 
 public class UI_Manager : MonoBehaviour
 {
-    [SerializeField] private TMP_Dropdown dropdown;
-    [SerializeField] private ArrivalProcess arrivalProcess;
-    [SerializeField] private TextMeshProUGUI arrivalTitle;
+    [SerializeField] private TMP_Dropdown dropdownArrival;
+    [SerializeField] private TMP_Dropdown dropdownService;
 
+    private ArrivalProcess arrivalProcess;
+    private ServiceProcess serviceProcess;
 
     private void Start()
     {
         arrivalProcess = FindFirstObjectByType<ArrivalProcess>();
-        dropdown.ClearOptions();
-        dropdown.AddOptions(Enum.GetNames(typeof(ArrivalIntervalTimeStrategy)).ToList());
-        dropdown.onValueChanged.AddListener(OnValueChanged);
-        OnValueChanged(0);
+        serviceProcess = FindFirstObjectByType<ServiceProcess>();
+
+        dropdownArrival.ClearOptions();
+        dropdownArrival.AddOptions(Enum.GetNames(typeof(ArrivalIntervalTimeStrategy)).ToList());
+        dropdownArrival.onValueChanged.AddListener(OnValueChanged);
+        //Service time
+        dropdownService.ClearOptions();
+        dropdownService.AddOptions(Enum.GetNames(typeof(ServiceProcess.ServiceIntervalTimeStrategy)).ToList());
+        dropdownService.onValueChanged.AddListener(OnServiceValueChanged);
+
+        //Initialize
+        OnValueChanged((int) ArrivalIntervalTimeStrategy.ObservedIntervalTime);
+        OnServiceValueChanged((int)ServiceProcess.ServiceIntervalTimeStrategy.ObservedIntervalTime);
     }
 
     private void OnDestroy()
     {
-        dropdown.onValueChanged.RemoveListener(OnValueChanged);
+        dropdownArrival.onValueChanged.RemoveListener(OnValueChanged);
     }
 
     private void OnValueChanged(int arg0)
     {
         ArrivalIntervalTimeStrategy strategy = (ArrivalIntervalTimeStrategy)arg0;
         arrivalProcess.ChangeArrivalStrategy(strategy);
+    }
 
-        arrivalTitle.text = $"Arrival Process: {strategy}";
+    private void OnServiceValueChanged(int arg0)
+    {
+        ServiceProcess.ServiceIntervalTimeStrategy strategy = (ServiceProcess.ServiceIntervalTimeStrategy)arg0;
+        serviceProcess.ChangeServiceStrategy(strategy);
+
     }
 }

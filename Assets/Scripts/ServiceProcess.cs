@@ -26,6 +26,10 @@ public class ServiceProcess : MonoBehaviour
     //New as Feb.25th
     //CarController carController;
     QueueManager queueManager; //=new QueueManager();
+    [Tooltip("These are Cumulative Distribution data ys")]
+    public float[] xs = { 10, 11, 3, 1, 1 };
+    [Tooltip("These are Cumulative Distribution data xs")]
+    public float[] ys = { .3846f, .8077f, .9231f, .9615f, 1 };
 
     public enum ServiceIntervalTimeStrategy
     {
@@ -75,6 +79,7 @@ public class ServiceProcess : MonoBehaviour
         {
             //Instantiate(carPrefab, carSpawnPlace.position, Quaternion.identity);
             float timeToNextServiceInSec = interServiceTimeInSeconds;
+            float U = Random.value;
             switch (serviceIntervalTimeStrategy)
             {
                 case ServiceIntervalTimeStrategy.ConstantIntervalTime:
@@ -84,12 +89,12 @@ public class ServiceProcess : MonoBehaviour
                     timeToNextServiceInSec = Random.Range(minInterServiceTimeInSeconds, maxInterServiceTimeInSeconds);
                     break;
                 case ServiceIntervalTimeStrategy.ExponentialIntervalTime:
-                    float U = Random.value;
                     float Lambda = 1 / serviceRateAsCarsPerHour;
                     timeToNextServiceInSec = Utilities.GetExp(U, Lambda);
                     break;
                 case ServiceIntervalTimeStrategy.ObservedIntervalTime:
                     timeToNextServiceInSec = interServiceTimeInSeconds;
+                    timeToNextServiceInSec = Utilities.MultiInterpolate(ys, xs, U) * 60; //we get it in min, so *60 => in sec
                     break;
                 default:
                     print("No acceptable ServiceIntervalTimeStrategy:" + serviceIntervalTimeStrategy);
@@ -113,7 +118,7 @@ public class ServiceProcess : MonoBehaviour
         //BoxCollidercarInService.GetComponent<BoxCollider>
         if (carInService)
         {
-            Renderer r = carInService.GetComponent<Renderer>();
+            Renderer r = carInService.GetComponentInChildren<Renderer>(false);
             r.material.color = Color.green;
 
         }
@@ -121,4 +126,8 @@ public class ServiceProcess : MonoBehaviour
 
     }
 
+    public void ChangeServiceStrategy(ServiceIntervalTimeStrategy strategy)
+    {
+        serviceIntervalTimeStrategy = strategy;
+    }
 }

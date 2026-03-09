@@ -6,6 +6,8 @@ using UnityEngine.AI;
 
 public class CarController : MonoBehaviour
 {
+    [SerializeField] private GameObject[] prefabs;
+
     NavMeshAgent navMeshAgent;
     public Transform targetWindow;
     public Transform targetCar=null;
@@ -14,6 +16,7 @@ public class CarController : MonoBehaviour
     public bool InService { get; set; }
     public GameObject driveThruWindow;
     public QueueManager queueManager;
+    private Animator animator;
 
     public enum CarState
     {
@@ -36,6 +39,8 @@ public class CarController : MonoBehaviour
 
         //
         carState = CarState.Entered;
+        prefabs[Random.RandomRange(0, prefabs.Length)].SetActive(true);
+        animator =  GetComponentInChildren<Animator>(false);
         FSMCar();
 
     }
@@ -102,6 +107,7 @@ public class CarController : MonoBehaviour
     public void ChangeState(CarState newCarState)
     {
         this.carState = newCarState;
+        animator.SetBool("IsWalking", newCarState != CarState.InService);
         FSMCar();
     }
 

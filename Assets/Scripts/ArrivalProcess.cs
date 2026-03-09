@@ -32,9 +32,9 @@ public class ArrivalProcess : MonoBehaviour
     //
     [Header("Observed Distribution")]
     [Tooltip("These are Cumulative Distribution data ys")]
-    public float[] xs = { 0, 1, 2, 10 };
+    public float[] xs = { 8, 6, 6, 2, 1, 3 };
     [Tooltip("These are Cumulative Distribution data xs")]
-    public float[] ys = { 0, .75f, .97f, 1f };
+    public float[] ys = { .3077f, .5385f, .7692f, .8462f, .8846f, 1 };
    public enum ArrivalIntervalTimeStrategy
     {
         ConstantIntervalTime,
@@ -67,12 +67,12 @@ public class ArrivalProcess : MonoBehaviour
         txtDebug.text = "\nproc#:" + System.Environment.ProcessorCount;
 #endif
     }
-   
+
     IEnumerator GenerateArrivals()
     {
         while (generateArrivals)
         {
-            GameObject carGO=Instantiate(carPrefab, carSpawnPlace.position, Quaternion.identity);
+            GameObject carGO = Instantiate(carPrefab, carSpawnPlace.position, Quaternion.identity);
             //if (queueManager.Count() > 0)
             //{
             //    queueManager.Add(carGO);
@@ -83,21 +83,21 @@ public class ArrivalProcess : MonoBehaviour
             switch (arrivalIntervalTimeStrategy)
             {
                 case ArrivalIntervalTimeStrategy.ConstantIntervalTime:
-                    timeToNextArrivalInSec= interArrivalTimeInSeconds;
+                    timeToNextArrivalInSec = interArrivalTimeInSeconds;
                     break;
                 case ArrivalIntervalTimeStrategy.UniformIntervalTime:
                     timeToNextArrivalInSec = Random.Range(minInterArrivalTimeInSeconds, maxInterArrivalTimeInSeconds);
                     break;
                 case ArrivalIntervalTimeStrategy.ExponentialIntervalTime:
-                    
+
                     float Lambda = 1 / arrivalRateAsCarsPerHour;
-                    timeToNextArrivalInSec = Utilities.GetExp(U,Lambda);
+                    timeToNextArrivalInSec = Utilities.GetExp(U, Lambda);
                     break;
                 case ArrivalIntervalTimeStrategy.ObservedIntervalTime:
-                    timeToNextArrivalInSec = Utilities.MultiInterpolate(ys,xs,U) * 60; //we get it in min, so *60 => in sec
+                    timeToNextArrivalInSec = Utilities.MultiInterpolate(ys, xs, U) * 60; //we get it in min, so *60 => in sec
                     break;
                 case ArrivalIntervalTimeStrategy.TriangularDistribution:
-                    timeToNextArrivalInSec = Utilities.GetTriangularDistribution(U, a,b,c);
+                    timeToNextArrivalInSec = Utilities.GetTriangularDistribution(U, a, b, c);
                     break;
                 default:
                     print("No acceptable arrivalIntervalTimeStrategy:" + arrivalIntervalTimeStrategy);
@@ -108,6 +108,8 @@ public class ArrivalProcess : MonoBehaviour
             //New as of Feb.23rd
             //float timeToNextArrivalInSec = Random.Range(minInterArrivalTimeInSeconds,maxInterArrivalTimeInSeconds);
             yield return new WaitForSeconds(timeToNextArrivalInSec);
+        }
+    }
 
     public void StopGeneratingArrivals()
     {
@@ -119,5 +121,4 @@ public class ArrivalProcess : MonoBehaviour
         arrivalIntervalTimeStrategy = newStrategy;
     }
 
-    }
-}
+ }
