@@ -11,6 +11,8 @@ public class UI_Manager : MonoBehaviour
     [SerializeField] private TMP_Dropdown dropdownService;
     [SerializeField] private TMP_Text timeScale;
     [SerializeField] private Scrollbar scrollbar;
+    [SerializeField] private TMP_InputField arrivalRateInput;
+    [SerializeField] private TMP_InputField serviceRateInput;
 
     private ArrivalProcess arrivalProcess;
     private ServiceProcess serviceProcess;
@@ -35,6 +37,14 @@ public class UI_Manager : MonoBehaviour
         scrollbar.onValueChanged.AddListener(OnScrollChanged);
         scrollbar.SetValueWithoutNotify(Time.timeScale * 0.01f);
         timeScale.SetText($"Time Scale: {Time.timeScale:F2}");
+
+        // Add listeners for rate changes
+        arrivalRateInput.onEndEdit.AddListener(OnArrivalRateChanged);
+        serviceRateInput.onEndEdit.AddListener(OnServiceRateChanged);
+
+        // Set initial values
+        arrivalRateInput.text = arrivalProcess.arrivalRateAsCarsPerHour.ToString();
+        serviceRateInput.text = serviceProcess.serviceRateAsCarsPerHour.ToString();
     }
 
     private void OnScrollChanged(float arg0)
@@ -63,5 +73,23 @@ public class UI_Manager : MonoBehaviour
         ServiceProcess.ServiceIntervalTimeStrategy strategy = (ServiceProcess.ServiceIntervalTimeStrategy)arg0;
         serviceProcess.ChangeServiceStrategy(strategy);
 
+    }
+
+    private void OnArrivalRateChanged(string value)
+    {
+        if (float.TryParse(value, out float rate))
+        {
+            arrivalProcess.arrivalRateAsCarsPerHour = rate;
+            arrivalProcess.interArrivalTimeInHours = 1.0f / rate;
+        }
+    }
+
+    private void OnServiceRateChanged(string value)
+    {
+        if (float.TryParse(value, out float rate))
+        {
+            serviceProcess.serviceRateAsCarsPerHour = rate;
+            serviceProcess.interServiceTimeInHours = 1.0f / rate;
+        }
     }
 }
